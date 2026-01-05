@@ -1,4 +1,4 @@
-
+Folder structure ------------------------------------------------``` educoach-github/ ├─ index.html ├─ assets/ │ ├─ css/ │ │ └─ style.css │ ├─ js/ │ │ ├─ bcrypt.min.js (cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js) │ │ └─ main.js ├─ .github/ │ └─ workflows/ │ └─ static.yml (auto-deploy to GitHub Pages) ├─ README.md └─ LICENSE
 --------------------------------------------------
 1.  index.html  (root)
 ------------------------------------------------```html
