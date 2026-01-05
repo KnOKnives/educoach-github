@@ -1,5 +1,5 @@
-Folder structure ------------------------------------------------``` educoach-github/ ├─ index.html ├─ assets/ │ ├─ css/ │ │ └─ style.css │ ├─ js/ │ │ ├─ bcrypt.min.js (cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js) │ │ └─ main.js ├─ .github/ │ └─ workflows/ │ └─ static.yml (auto-deploy to GitHub Pages) ├─ README.md └─ LICENSE
---------------------------------------------------
+
+
 1.  index.html  (root)
 ------------------------------------------------```html
 <!DOCTYPE html>
@@ -239,3 +239,74 @@ Folder structure ------------------------------------------------``` educoach-gi
 <script src="assets/js/main.js"></script>
 </body>
 </html>
+
+--------------------------------------------------
+3.  assets/js/main.js
+------------------------------------------------```javascript
+/* ----------  theme ---------- */
+const toggle = document.getElementById('themeToggle');
+const stored = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', stored);
+toggle.querySelector('i').className = stored === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+toggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    toggle.querySelector('i').className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+});
+
+/* ----------  sticky nav ---------- */
+window.addEventListener('scroll', () => {
+    document.getElementById('mainNav').classList.toggle('navbar-shrink', window.scrollY > 50);
+});
+
+/* ----------  modal toggle ---------- */
+function switchMode(type) {
+    const userForm = document.getElementById('userForm');
+    const adminForm = document.getElementById('adminForm');
+    const title = document.getElementById('modalTitle');
+    if (type === 'admin') {
+        userForm.classList.add('d-none');
+        adminForm.classList.remove('d-none');
+        title.textContent = 'Admin Access';
+    } else {
+        userForm.classList.remove('d-none');
+        adminForm.classList.add('d-none');
+        title.textContent = 'Welcome Back';
+    }
+}
+
+/* ----------  admin hashes (bcrypt cost 12) ---------- */
+const adminHash = {
+    admin1: '$2y$12$j.K8sR8q3E6G2xB2K8sR8OGAQ2w1I6O2O2O2O2O2O2O2u',
+    admin2: '$2y$12$j.K8sR8q3E6G2xB2K8sR8OGAQ2w1I6O2O2O2O2O2O2O2v',
+    admin3: '$2y$12$j.K8sR8q3E6G2xB2K8sR8OGAQ2w1I6O2O2O2O2O2O2O2w'
+};
+
+/* ----------  login handlers ---------- */
+function userLogin(e) {
+    e.preventDefault();
+    bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+    alert('Student / Teacher logged-in (demo)');
+}
+
+async function adminLogin(e) {
+    e.preventDefault();
+    const user = document.getElementById('adminUser').value;
+    const pin  = document.getElementById('adminPin').value;
+    if (!user || !pin) return;
+    const hash = adminHash[user];
+    if (!hash) { alert('Unknown admin'); return; }
+    const ok = await bcrypt.compare(pin, hash);
+    if (ok) {
+        bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+        document.getElementById('adminName').textContent = user;
+        new bootstrap.Modal(document.getElementById('adminModal')).show();
+    } else {
+        alert('Wrong 11-digit password');
+    }
+}
+
+/* ----------  year footer ---------- */
+document.getElementById('yr').textContent = new Date().getFullYear();
